@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2026 Daniel Brown Jr.
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+version = 1
+
+# Enumerate original documentation and metadata; new files require explicit coverage.
+[[annotations]]
+path = [
+    ".gitignore",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CONTRIBUTING.md",
+    "README.md",
+    "SECURITY.md",
+    "docs/architecture.md",
+    "docs/consumer-experience.md",
+    "docs/decisions/0001-engineering-foundation.md",
+    "docs/evidence-contract.md",
+    "docs/resource-budgets.md",
+    "docs/runtime.md",
+    "docs/security-model.md",
+    "docs/verification.md",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Daniel Brown Jr."
+SPDX-License-Identifier = "AGPL-3.0-or-later"
