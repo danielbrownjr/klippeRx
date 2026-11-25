@@ -1,0 +1,33 @@
+# Consumer experience
+
+Approved design direction; actual platform access and usability unverified.
+
+## F08 - Consumer experience
+
+### Journey and information architecture
+
+Catalog installation is owned by B3; plugin declares resources. Existing endpoint launcher is source-reported, not verified mobile discovery. Use a distinct controlled trusted hostname for private browser access, including phone browsers. Desktop required only for installation/protected setup, not continuous monitoring. No vendor frontend patch, manual DNS, certificate, CLI, proxy, companion or MCP. Optional supported Fluidd tile is an inert launch link, not a credential entry or private evidence display. If trusted origin cannot be supplied, show only minimal liveness/version and inert public guidance; private access blocked. Never ask the owner to bypass certificate warnings.
+
+| Screen | Primary content and action | Denied or degraded state |
+| --- | --- | --- |
+| First launch | Explain local diagnostics, trusted pairing, no AI account required; Continue locally primary | Trust not established: no private data, return to B3 |
+| Overview | Connection state, last observed time/age, coverage, recent findings, current print state if known | Unknown or stale prominently marked; never green health by absence of evidence |
+| Findings | Severity and evidence quality separately, observed facts, possible causes, source handles, time window | Insufficient evidence: state what is missing; no asserted diagnosis |
+| Finding detail | Expand evidence, show rule/version, alternatives, safe next observation | No autonomous testing; hazardous service procedure deferred |
+| Configuration | Read-only inventory, available source scope, disk/runtime distinction, incomplete include graph | No semantic-equivalence or safe reorganization claim in M1 |
+| AI setup | Skip, explain API account/key, separate metering, open protected native B3 setup | No key field in browser; no subscription sign-in promise; unavailable contract blocks setup |
+| AI diagnosis | Select finding, prepare sanitized preview, inspect exact data and omissions, select supported provider/model, explicitly Send | Invalid consent, stale preview, disconnected provider, quota or failed trust blocks send |
+| Diagnosis result | Untrusted advisory text, evidence references, uncertainty, local recommendations unchanged | Timeout after possible dispatch marked uncertain; no automatic retry or fallback |
+| Privacy/settings | Retention status, provider connection status, explicit export, protected disconnect, logout | Failed deletion or revocation reported, not silently called disconnected |
+
+Navigation: Overview, Findings, Configuration, AI advice, Settings. On mobile use a compact navigation menu and stacked cards; no horizontal scrolling for core tasks at 320 CSS px. No account or cloud prompt blocks local use. Local evidence private even without provider account. Use separate badges for data freshness, diagnostic severity and provider state; never combine them into a misleading health score. Screen reader labels, logical focus order, visible focus, keyboard operation, non-color status text, reduced motion, target contrast 4.5:1 normal text and 3:1 large text, touch targets proposed >=44 CSS px. Do not auto-scroll away from a finding or announce each telemetry update. Announce meaningful connection/state changes politely. Show error next to relevant control; maintain focus after dialog dismissal. Export preview and consent usable without pointer.
+
+### UI state contract
+
+Orthogonal states: access {untrusted, pairing, authenticated, expired, denied}; observation {initializing, current, stale, unavailable}; coverage {complete_for_declared_scope, partial, unknown}; provider {disconnected, setup_required, connected, blocked, expired, removal_pending}; diagnosis {idle, preparing, preview_ready, dispatching, completed, unsent, uncertain, failed}; storage {normal, limited, paused}. State values are logical, not implementation enums yet. Access denial overrides private rendering, even cached content. Provider connected does not imply authority for dispatch. Stale telemetry never becomes current merely because UI refreshed. Local failure does not authorize cloud transfer. Storage paused leaves prior bounded evidence with freshness flags. Logout ends streams and clears private UI state; server revocation controls access. Background polling does not extend idle authority. Reconnect after session expiry through approved pairing, not LAN trust.
+
+Consent: display destination provider/account/model, purpose, exact sanitized bytes in readable form and raw canonical preview, omitted classes, limits, metering and provider policy link. User confirms one request; bind digest, provider/account/model/parameters, purpose, owner/install and authorization revision. Change any bound field invalidates approval. Explicitly distinguish prepared, unsent, sent and uncertain; do not imply no charge after a timeout. No auto retries or paid fallback. No provider key in UI, URLs, storage, logs or evidence. Disconnect routes to protected owner operation; show local invalidation separately from remote revocation. Owner revokes API key at provider where required. Export is explicit authorized local transfer, not cloud consent. Default sanitized export; raw export not proposed in M1.
+
+### Nontechnical acceptance (future)
+
+Use synthetic printer first, then separately authorized exact target/client matrix. Recruit representative nontechnical owners (proposed 5 formative participants, not statistical proof). Record browser/OS/viewport, task completion, errors, assistance, time and accessibility failures. Tasks: install through ordinary B3 workflow; find launcher; pair trusted phone; skip AI; locate stale finding and evidence; return to printer interface; connect via protected native setup using synthetic key; explain separate API metering; inspect preview and cancel; explicitly dispatch mocked request; distinguish uncertain response; disconnect and logout. Pass criterion proposed: every participant completes critical security tasks without CLI/manual certificates or assistance; no mistaken cloud send or bypass; revise failed flows and retest. Measure initial LAN screen <=2 s and readiness <=10 s as approved F06 ceilings, not verified. Include four simultaneous UI sessions and bounded read p95 <=250 ms. No dynamic private content before trust. Test keyboard-only, screen reader, 320 px viewport, zoom 200%, slow/offline connection, session expiry during preview, no provider account, no external scripts. C7 remains OPEN.

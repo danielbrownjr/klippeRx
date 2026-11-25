@@ -1,0 +1,40 @@
+# Local workspace, scratch evidence and generated output
+/_trash/
+/notes/
+/dist/
+/build/
+/.venv*/
+.venv*/
+__pycache__/
+*.py[codz]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+.DS_Store
+.env
+.env.*
+!.env.example
+*.asc
+*.gpg
+*.key
+*.pem
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.sqlite-journal
+*.sqlite3-journal
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+*.log
+# Do not ignore plugin/files/lib/ or plugin/files/wheels/.
+# Builder packs files/ verbatim, including ignored files: inspect payloads.
