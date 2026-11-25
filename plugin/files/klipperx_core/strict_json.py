@@ -17,7 +17,7 @@ BACKSLASH = ord("\\")
 
 
 class EvidenceError(ValueError):
-    """Bounded classification without untrusted input."""
+    """Bounded classification; do not persist traceback frames or locals."""
 
 
 def reject_constant(token: str) -> Never:
@@ -55,9 +55,12 @@ def check_string(value: str) -> None:
     try:
         size = len(value.encode("utf-8"))
     except UnicodeError:
-        raise EvidenceError("unicode") from None
-    if size > MAX_STRING_BYTES:
-        raise EvidenceError("string_limit")
+        pass
+    else:
+        if size > MAX_STRING_BYTES:
+            raise EvidenceError("string_limit")
+        return
+    raise EvidenceError("unicode")
 
 
 def check_bounds(value: object, depth: int = 1) -> None:
@@ -121,8 +124,11 @@ def decode_record(payload: bytes, *, limit: int = MAX_BYTES) -> dict[str, object
     except EvidenceError:
         raise
     except (ValueError, RecursionError):
-        raise EvidenceError("invalid_json") from None
-    if not isinstance(decoded, dict):
-        raise EvidenceError("object_required")
-    check_bounds(decoded)
-    return decoded
+        pass
+    else:
+        if not isinstance(decoded, dict):
+            raise EvidenceError("object_required")
+        check_bounds(decoded)
+        return decoded
+    # Raise outside the handler so the parser exception cannot retain raw input.
+    raise EvidenceError("invalid_json")

@@ -51,3 +51,20 @@ class StrictJsonTests(unittest.TestCase):
         self.assertEqual(decode_record(payload.ljust(32768, b" ")), record)
         with self.assertRaisesRegex(EvidenceError, "^string_limit$"):
             decode_record(json.dumps({"s": "é" * 256 + "a"}).encode())
+
+    def test_rejection_does_not_chain_raw_input(self) -> None:
+        cases = (
+            (b'{"canary":"synthetic-secret",}', "invalid_json"),
+            (b'{"canary":"synthetic-secret\xff"}', "invalid_json"),
+            (br'{"canary":"synthetic-secret\ud800"}', "unicode"),
+            (br'{"synthetic-secret\ud800":0}', "unicode"),
+            (b'{"synthetic-secret":1,"synthetic-secret":2}', "duplicate_key"),
+            (b'{"synthetic-secret":NaN}', "nonfinite"),
+        )
+        for payload, reason in cases:
+            with self.subTest(reason=reason):
+                with self.assertRaisesRegex(EvidenceError, "^" + reason + "$") as caught:
+                    decode_record(payload)
+                self.assertEqual(caught.exception.args, (reason,))
+                self.assertIsNone(caught.exception.__cause__)
+                self.assertIsNone(caught.exception.__context__)

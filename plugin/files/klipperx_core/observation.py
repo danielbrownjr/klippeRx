@@ -64,8 +64,10 @@ def timestamp(value: object) -> str | None:
     try:
         datetime.fromisoformat(value)
     except ValueError:
-        raise EvidenceError("timestamp") from None
-    return value
+        pass
+    else:
+        return value
+    raise EvidenceError("timestamp")
 
 
 def choice(value: object, allowed: tuple[str, ...]) -> str:
@@ -81,7 +83,8 @@ def measurement(value: object, reason: object) -> tuple[int | float | None, Unkn
         try:
             return None, UnknownReason(reason)
         except ValueError:
-            raise EvidenceError("unknown_reason") from None
+            pass
+        raise EvidenceError("unknown_reason")
     if isinstance(value, bool) or not isinstance(value, (int, float)) or reason is not None:
         raise EvidenceError("measurement")
     return value, None

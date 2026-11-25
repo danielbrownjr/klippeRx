@@ -36,21 +36,51 @@ class ObservationTests(unittest.TestCase):
 
     def test_rejections(self) -> None:
         cases = (
-            {"schema": "1.1"}, {"seq": True}, {"seq": -1},
-            {"monotonic_ms": 1.5}, {"unit": "F"},
-            {"source_kind": "target"}, {"id": "../secret"},
-            {"metric_id": "unknown"}, {"extra": 1},
-            {"unknown_reason": None}, {"unknown_reason": "other"},
-            {"value": True, "unknown_reason": None},
-            {"value": "0", "unknown_reason": None},
-            {"value": 1}, {"observed_utc": "2026-02-30T00:00:00Z"},
-            {"received_utc": "2026-01-01T00:00:00+01:00"},
-            {"coverage": "all"}, {"clock_quality": "trusted"},
+            ({"schema": "1.1"}, "schema"),
+            ({"seq": True}, "counter"), ({"seq": -1}, "counter"),
+            ({"monotonic_ms": 1.5}, "counter"),
+            ({"unit": "F"}, "enum"), ({"source_kind": "target"}, "enum"),
+            ({"id": "../secret"}, "token"), ({"metric_id": "unknown"}, "enum"),
+            ({"extra": 1}, "fields"), ({"unknown_reason": None}, "unknown_reason"),
+            ({"unknown_reason": "synthetic-secret"}, "unknown_reason"),
+            ({"value": True, "unknown_reason": None}, "measurement"),
+            ({"value": "0", "unknown_reason": None}, "measurement"),
+            ({"value": 1}, "measurement"),
+            ({"observed_utc": "2026-02-30T00:00:00Z"}, "timestamp"),
+            ({"received_utc": "2026-01-01T00:00:00+01:00"}, "timestamp"),
+            ({"received_utc": "2026-01-01T25:00:00Z"}, "timestamp"),
+            ({"coverage": "all"}, "enum"), ({"clock_quality": "trusted"}, "enum"),
         )
-        for changes in cases:
+        for changes, reason in cases:
             with self.subTest(changes=changes):
-                with self.assertRaises(EvidenceError):
+                with self.assertRaisesRegex(EvidenceError, "^" + reason + "$") as caught:
                     decode_observation(fixture(**changes))
+                self.assertEqual(caught.exception.args, (reason,))
+                self.assertIsNone(caught.exception.__cause__)
+                self.assertIsNone(caught.exception.__context__)
+
+    def test_all_unknown_reasons(self) -> None:
+        for reason in UnknownReason:
+            with self.subTest(reason=reason):
+                observation = decode_observation(fixture(unknown_reason=reason.value))
+                self.assertIsNone(observation.value)
+                self.assertIs(observation.unknown_reason, reason)
+
+    def test_missing_field(self) -> None:
+        record = json.loads(fixture())
+        del record["received_utc"]
+        with self.assertRaisesRegex(EvidenceError, "^fields$"):
+            decode_observation(json.dumps(record).encode())
+
+    def test_signed_measurements_and_counter_bounds(self) -> None:
+        for value in (-1.25, -9007199254740991, 9007199254740991):
+            with self.subTest(value=value):
+                observation = decode_observation(fixture(
+                    value=value, unknown_reason=None, seq=0, monotonic_ms=9007199254740991
+                ))
+                self.assertEqual(observation.value, value)
+                self.assertEqual(observation.seq, 0)
+                self.assertEqual(observation.monotonic_ms, 9007199254740991)
 
     def test_accept_fixture_boundaries(self) -> None:
         payload = fixture(id="a" * 64, observed_utc="2024-02-29T00:00:00.123456Z",
