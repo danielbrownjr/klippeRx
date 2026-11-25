@@ -20,6 +20,8 @@ path = [
     "docs/runtime.md",
     "docs/security-model.md",
     "docs/verification.md",
+    "plugin/doc/CHANGELOG.md",
+    "plugin/doc/README.md",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Daniel Brown Jr."
